@@ -1,3 +1,5 @@
 export default {
-    HOME: '/'
+    HOME: '/',
+    LOGIN: 'login',
+    PROFILE: 'profile'
 }

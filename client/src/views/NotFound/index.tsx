@@ -1,7 +1,7 @@
 import {Link} from 'react-router-dom'
 import routes from '../../router/path'
 
-export default function NotFound() {
+function NotFound() {
     return (
         <div>
             <h1>404</h1>
@@ -10,3 +10,5 @@ export default function NotFound() {
         </div>
     )
 }
+
+export default NotFound
