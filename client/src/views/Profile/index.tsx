@@ -1,8 +1,33 @@
+import {useEffect} from 'react'
+import {useAppDispatch} from '../../store/hooks.ts'
+import {fetchUserInfos, useUserSelector} from '../../store/userSlice.ts'
+
 function Profile() {
+    const dispatch = useAppDispatch()
+    const {loading, error, userInfos} = useUserSelector()
+
+    useEffect(() => {
+        dispatch(fetchUserInfos())
+    }, [dispatch])
+
+    console.warn(error)
+
+    if (error) {
+        return <p>{error}</p>
+    }
+
+    if (loading) {
+        return <p>{loading}</p>
+    }
+
+    if (!userInfos) {
+        return
+    }
+
     return (
         <>
             <div className="header">
-                <h1>Welcome back<br/>Tony Jarvis!</h1>
+                <h1>Welcome back<br/>{userInfos.firstName} {userInfos.lastName}!</h1>
                 <button className="edit-button">Edit Name</button>
             </div>
             <h2 className="sr-only">Accounts</h2>
