@@ -1,7 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import {getProfile, HttpError, updateProfile} from '../service/api.ts'
 import {useAppSelector} from './hooks.ts'
-import {UserInfos, UserInfosUpdate, UsernameUpdate} from '../types'
+import {UserInfos, UsernameUpdate} from '../types'
 import {RootState} from './index.ts'
 import {logout} from './authSlice.ts'
 
