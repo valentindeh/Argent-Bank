@@ -7,3 +7,7 @@ export type UserInfos = {
     createdAt: string
     updatedAt: string
 }
+
+export type UsernameUpdate = {
+    userName: string
+}

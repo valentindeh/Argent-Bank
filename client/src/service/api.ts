@@ -1,4 +1,4 @@
-import {UserInfos} from '../types'
+import {UserInfos, UsernameUpdate} from '../types'
 
 const apiV1User = 'http://localhost:3001/api/v1/user/'
 
@@ -40,6 +40,25 @@ export async function getProfile(token: string): Promise<UserInfos> {
             'Content-Type': 'application/json',
             'Authorization' : `Bearer ${token}`
         }
+    })
+
+    if (!response.ok) {
+        throw new HttpError(response)
+    }
+
+    const { body } = await response.json()
+
+    return body
+}
+
+export async function updateProfile(data: UsernameUpdate, token: string): Promise<UserInfos> {
+    const response = await fetch(apiV1User + 'profile', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization' : `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
     })
 
     if (!response.ok) {

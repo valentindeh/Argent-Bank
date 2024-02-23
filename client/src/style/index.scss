@@ -273,6 +273,26 @@ body {
   color: #fff;
 }
 
+.input-new-username {
+  padding: 5px;
+  font-size: 1.2rem;
+}
+
+.form-username-actions {
+  margin-top: 10px;
+}
+
+.form-username-actions button+button {
+  margin-left: 20px;
+}
+
+.form-username-actions button:not([type="submit"]) {
+  border: none;
+  font-weight: bold;
+  padding: 10px;
+  background-color: transparent;
+}
+
 @media (min-width: 720px) {
   .account {
     flex-direction: row;

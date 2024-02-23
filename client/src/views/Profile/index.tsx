@@ -1,6 +1,7 @@
-import {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useAppDispatch} from '../../store/hooks.ts'
-import {fetchUserInfos, useUserSelector} from '../../store/userSlice.ts'
+import {fetchUserInfos, updateUsername, useUserSelector} from '../../store/userSlice.ts'
+import {logout} from '../../store/authSlice.ts'
 
 function Profile() {
     const dispatch = useAppDispatch()
@@ -10,7 +11,14 @@ function Profile() {
         dispatch(fetchUserInfos())
     }, [dispatch])
 
-    console.warn(error)
+    const [editingMode, setEditingMode] = useState<boolean>(false)
+    const [newUserName, setNewUserName] = useState<string>('')
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        dispatch(updateUsername({userName: newUserName}))
+        setEditingMode(false)
+    }
 
     if (error) {
         return <p>{error}</p>
@@ -21,6 +29,7 @@ function Profile() {
     }
 
     if (!userInfos) {
+        dispatch(logout())
         return
     }
 
@@ -28,7 +37,19 @@ function Profile() {
         <>
             <div className="header">
                 <h1>Welcome back<br/>{userInfos.firstName} {userInfos.lastName}!</h1>
-                <button className="edit-button">Edit Name</button>
+                { editingMode ?
+                    <form onSubmit={(e) => handleSubmit(e)}>
+                        <label htmlFor="username" className="sr-only">New username</label>
+                        <input className="input-new-username" type="text" defaultValue={userInfos.userName}
+                               placeholder="Username" id="username"
+                               onChange={(e) => setNewUserName(e.target.value)}/>
+                        <div className="form-username-actions">
+                            <button onClick={() => setEditingMode(!editingMode)}>Cancel</button>
+                            <button type="submit" className="edit-button">Save</button>
+                        </div>
+                    </form> :
+                    <button className="edit-button" onClick={() => setEditingMode(!editingMode)}>Edit Name</button>
+                }
             </div>
             <h2 className="sr-only">Accounts</h2>
             <section className="account">
