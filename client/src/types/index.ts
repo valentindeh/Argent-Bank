@@ -9,5 +9,6 @@ export type UserInfos = {
 }
 
 export type UsernameUpdate = {
-    userName: string
+    firstName: string
+    lastName: string
 }

@@ -65,8 +65,13 @@ paths:
         - User Module
       summary: User Profile API
       description: API for fetching a user profile
-      #produces:
-       # - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+      produces:
+        - application/json
       responses:
         '200':
           description: User profile retrieved successully
@@ -84,6 +89,10 @@ paths:
       summary: User Profile API
       description: API for updating a user profile
       parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
         - in: body
           name: body
           description: Update user profile attributes
@@ -121,9 +130,6 @@ definitions:
       lastName:
         type: string
         description: user last name
-      userName:
-        type: string
-        description: user public name
   Login:
     properties:
       email:
@@ -154,5 +160,7 @@ definitions:
   UserProfile:
     type: object
     properties:
-      userName:
+      firstName:
+        type: string
+      lastName:
         type: string

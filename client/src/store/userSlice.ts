@@ -31,7 +31,7 @@ export const fetchUserInfos = createAsyncThunk<UserInfos, void, { rejectValue: {
     }
 })
 
-export const updateUsername = createAsyncThunk<UserInfos, UsernameUpdate, { rejectValue: { message: string }, state: RootState }>("updateProfile",async (data, thunkAPI) => {
+export const updateUserInfos = createAsyncThunk<UserInfos, UsernameUpdate, { rejectValue: { message: string }, state: RootState }>("updateProfile",async (data, thunkAPI) => {
         try {
             const { userToken } = thunkAPI.getState().auth
 
@@ -76,15 +76,15 @@ const userSlice = createSlice({
                 state.error = action.payload?.message
                 state.userInfos = null
             })
-            .addCase(updateUsername.pending, (state) => {
+            .addCase(updateUserInfos.pending, (state) => {
                 state.error = undefined
                 state.loading = true
             })
-            .addCase(updateUsername.fulfilled, (state, action) => {
+            .addCase(updateUserInfos.fulfilled, (state, action) => {
                 state.loading = false
                 state.userInfos = action.payload
             })
-            .addCase(updateUsername.rejected, (state, action) => {
+            .addCase(updateUserInfos.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload?.message
                 state.userInfos = null
@@ -95,6 +95,5 @@ const userSlice = createSlice({
     }
 })
 
-export const {} = userSlice.actions
 export const useUserSelector = () => useAppSelector(state => state.user)
 export default userSlice.reducer

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {useAppDispatch} from '../../store/hooks.ts'
-import {fetchUserInfos, updateUsername, useUserSelector} from '../../store/userSlice.ts'
+import {fetchUserInfos, updateUserInfos, useUserSelector} from '../../store/userSlice.ts'
 import {logout} from '../../store/authSlice.ts'
 
 function Profile() {
@@ -12,11 +12,12 @@ function Profile() {
     }, [dispatch])
 
     const [editingMode, setEditingMode] = useState<boolean>(false)
-    const [newUserName, setNewUserName] = useState<string>('')
+    const [newFirstName, setNewFirstName] = useState<string>('')
+    const [newLastName, setNewLastName] = useState<string>('')
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        dispatch(updateUsername({userName: newUserName}))
+        dispatch(updateUserInfos({firstName: newFirstName, lastName: newLastName}))
         setEditingMode(false)
     }
 
@@ -36,19 +37,26 @@ function Profile() {
     return (
         <>
             <div className="header">
-                <h1>Welcome back<br/>{userInfos.firstName} {userInfos.lastName}!</h1>
-                { editingMode ?
-                    <form onSubmit={(e) => handleSubmit(e)}>
-                        <label htmlFor="username" className="sr-only">New username</label>
-                        <input className="input-new-username" type="text" defaultValue={userInfos.userName}
-                               placeholder="Username" id="username"
-                               onChange={(e) => setNewUserName(e.target.value)}/>
-                        <div className="form-username-actions">
-                            <button onClick={() => setEditingMode(!editingMode)}>Cancel</button>
-                            <button type="submit" className="edit-button">Save</button>
-                        </div>
-                    </form> :
-                    <button className="edit-button" onClick={() => setEditingMode(!editingMode)}>Edit Name</button>
+                {editingMode ?
+                    <>
+                        <h1>Welcome back</h1>
+                        <form onSubmit={(e) => handleSubmit(e)}>
+                            <label htmlFor="firstName" className="sr-only">New firstName</label>
+                            <input className="input-new-name" type="text" defaultValue={userInfos.firstName} placeholder="firstName" id="firstName"
+                                   onChange={(e) => setNewFirstName(e.target.value)}/>
+                            <label htmlFor="lastName" className="sr-only">New firstName</label>
+                            <input className="input-new-name" type="text" defaultValue={userInfos.lastName} placeholder="lastName" id="lastName"
+                                   onChange={(e) => setNewLastName(e.target.value)}/>
+                            <div className="form-username-actions">
+                                <button onClick={() => setEditingMode(!editingMode)}>Cancel</button>
+                                <button type="submit" className="edit-button">Save</button>
+                            </div>
+                        </form>
+                    </> :
+                    <>
+                        <h1>Welcome back<br/>{userInfos.firstName} {userInfos.lastName}!</h1>
+                        <button className="edit-button" onClick={() => setEditingMode(!editingMode)}>Edit Name</button>
+                    </>
                 }
             </div>
             <h2 className="sr-only">Accounts</h2>
