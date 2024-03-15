@@ -4,8 +4,7 @@ import {Header, Footer} from '../components'
 import path from './path'
 import {useAuthSelector} from '../store/authSlice.ts'
 
-
-export default function Index() {
+export default function Router() {
     const {userToken} = useAuthSelector()
 
     return (

@@ -11,9 +11,12 @@ type UserState = {
     error: string | undefined
 }
 
-export const fetchUserInfos = createAsyncThunk<UserInfos, void, { rejectValue: { message: string }, state: RootState }>('fetchUserInfos', async (_, thunkAPI) => {
+export const fetchUserInfos = createAsyncThunk<UserInfos, void, {
+    rejectValue: { message: string },
+    state: RootState
+}>('fetchUserInfos', async (_, thunkAPI) => {
     try {
-        const { userToken } = thunkAPI.getState().auth
+        const {userToken} = thunkAPI.getState().auth
 
         if (!userToken) {
             throw new Error('User token is missing')
@@ -21,19 +24,22 @@ export const fetchUserInfos = createAsyncThunk<UserInfos, void, { rejectValue: {
 
         return getProfile(userToken)
     } catch (e: any) {
-        let { message } = e
+        let {message} = e
 
         if (e instanceof HttpError && e.statusCode === 400) {
             message = 'Unauthorized action'
         }
 
-        return thunkAPI.rejectWithValue({ message })
+        return thunkAPI.rejectWithValue({message})
     }
 })
 
-export const updateUserInfos = createAsyncThunk<UserInfos, UsernameUpdate, { rejectValue: { message: string }, state: RootState }>("updateProfile",async (data, thunkAPI) => {
+export const updateUserInfos = createAsyncThunk<UserInfos, UsernameUpdate, {
+    rejectValue: { message: string },
+    state: RootState
+}>("updateProfile", async (data, thunkAPI) => {
         try {
-            const { userToken } = thunkAPI.getState().auth
+            const {userToken} = thunkAPI.getState().auth
 
             if (!userToken) {
                 throw new Error('User token is missing')
@@ -41,13 +47,13 @@ export const updateUserInfos = createAsyncThunk<UserInfos, UsernameUpdate, { rej
 
             return updateProfile(data, userToken)
         } catch (e: any) {
-            let { message } = e
+            let {message} = e
 
             if (e instanceof HttpError && e.statusCode === 400) {
                 message = 'Unauthorized action'
             }
 
-            return thunkAPI.rejectWithValue({ message })
+            return thunkAPI.rejectWithValue({message})
         }
     }
 )
@@ -59,8 +65,7 @@ const userSlice = createSlice({
         loading: false,
         error: undefined
     } as UserState,
-    reducers: {
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(fetchUserInfos.pending, (state) => {
@@ -80,9 +85,9 @@ const userSlice = createSlice({
                 state.error = undefined
                 state.loading = true
             })
-            .addCase(updateUserInfos.fulfilled, (state, action) => {
+            .addCase(updateUserInfos.fulfilled, (state, {payload}) => {
                 state.loading = false
-                state.userInfos = action.payload
+                state.userInfos = payload
             })
             .addCase(updateUserInfos.rejected, (state, action) => {
                 state.loading = false

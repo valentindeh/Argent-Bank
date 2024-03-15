@@ -11,7 +11,6 @@ function Login() {
 
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-        console.warn(rememberMe)
         dispatch(login({username, password, rememberMe}))
     }
 

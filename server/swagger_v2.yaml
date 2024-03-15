@@ -1,0 +1,434 @@
+openapi: 3.0.1
+info:
+  title: Bank Argent API documentation
+  description: Contains all available API endpoints in this codebase
+  termsOfService: http://swagger.io/terms/
+  version: 2.0.0
+servers:
+  - url: http://localhost:3001/api/v1
+paths:
+  /user/login:
+    post:
+      tags:
+        - User Module
+      summary: Login
+      description: API for Login
+      requestBody:
+        description: Login Payload
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+        required: true
+      responses:
+        "200":
+          description: Login Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  body:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: user token after successfully login
+                  message:
+                    type: string
+                  status:
+                    type: number
+        "400":
+          $ref: '#/components/responses/ServerError'
+        "500":
+          $ref: '#/components/responses/UnknownError'
+  /user/signup:
+    post:
+      tags:
+        - User Module
+      summary: Signup
+      description: API for Signup
+      requestBody:
+        description: Signup Payload
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: user email
+                password:
+                  type: string
+                  description: user password
+                firstName:
+                  type: string
+                  description: user first name
+                lastName:
+                  type: string
+                  description: user last name
+        required: true
+      responses:
+        "200":
+          description: Signup Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: number
+                  body:
+                    $ref: '#/components/schemas/User'
+        "400":
+          $ref: '#/components/responses/ServerError'
+        "500":
+          $ref: '#/components/responses/UnknownError'
+  /user/profile:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User Module
+      summary: User Profile API
+      description: API for fetching a user profile=
+      responses:
+        "200":
+          description: User profile retrieved successully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: number
+                  body:
+                    $ref: '#/components/schemas/User'
+        "400":
+          $ref: '#/components/responses/ServerError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/UnknownError'
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - User Module
+      summary: User Profile API
+      description: API for updating a user profile
+      requestBody:
+        description: Update user profile attributes
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  description: new user firstName
+                lastName:
+                  type: string
+                  description: new user lastName
+        required: true
+      responses:
+        "200":
+          description: User profile retrieved successully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: number
+                  body:
+                    $ref: '#/components/schemas/User'
+        "400":
+          $ref: '#/components/responses/ServerError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/UnknownError'
+  /user/transactions:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Transactions Module
+      summary: User Transactions API
+      description: Fetch all user transactions
+      parameters:
+        - name: month
+          in: query
+          description: desired month transactions
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User Transactions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  body:
+                    type: object
+                    properties:
+                      transactions:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Transaction'
+                      balance:
+                        type: number
+                  message:
+                    type: string
+                  status:
+                    type: number
+        "400":
+          $ref: '#/components/responses/ServerError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/UnknownError'
+  /user/transaction/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Transactions Module
+      summary: User Transaction API
+      description: API for fetching a user transaction
+      parameters:
+        - name: id
+          in: path
+          description: ID of the transaction to get
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User Transaction retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  body:
+                    $ref: '#/components/schemas/Transaction'
+                  message:
+                    type: string
+                  status:
+                    type: number
+        "400":
+          $ref: '#/components/responses/ServerError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/UnknownError'
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Transactions Module
+      summary: User Transaction API
+      description: API for updating a user transaction
+      parameters:
+        - name: id
+          in: path
+          description: ID of the transaction to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Update user transaction
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      responses:
+        "200":
+          description: User Transaction updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  body:
+                    $ref: '#/components/schemas/Transaction'
+                  message:
+                    type: string
+                  status:
+                    type: number
+        "400":
+          $ref: '#/components/responses/ServerError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/UnknownError'
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Transactions Module
+      summary: User Transaction API
+      description: API for updating a user transaction
+      parameters:
+        - name: id
+          in: path
+          description: ID of the transaction to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Update user transaction
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      responses:
+        "200":
+          description: User Transaction updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        "400":
+          $ref: '#/components/responses/ServerError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/UnknownError'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Transactions Module
+      summary: User Transaction API
+      description: API for deleting a user transaction
+      parameters:
+        - name: id
+          in: path
+          description: ID of the transaction to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User Transaction deleted successfully
+          content: {}
+        "400":
+          $ref: '#/components/responses/ServerError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/UnknownError'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnknownError:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400'
+  schemas:
+    Error400:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+      required:
+        - status
+        - message
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+    Transaction:
+      type: object
+      properties:
+        date:
+          type: string
+          description: date of transaction
+          format: date
+        description:
+          type: string
+          description: description of transaction
+        amount:
+          type: number
+          description: amount of transaction
+        balance:
+          type: number
+          description: balance after transaction
+        type:
+          type: string
+          description: type of transaction
+        category:
+          type: string
+          description: category of transaction
+        notes:
+          type: string
+          description: notes of transaction
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+          description: user email
+        password:
+          type: string
+          description: user password
+        firstName:
+          type: string
+          description: user first name
+        lastName:
+          type: string
+          description: user last name
+        createdAt:
+          type: string
+          description: user date created
+          format: date
+        updatedAt:
+          type: string
+          description: user date last update
+          format: date
+        id:
+          type: integer
