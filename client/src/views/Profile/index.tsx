@@ -1,23 +1,34 @@
 import React, {useEffect, useState} from 'react'
 import {useAppDispatch} from '../../store/hooks.ts'
 import {fetchUserInfos, updateUserInfos, useUserSelector} from '../../store/userSlice.ts'
-import {logout} from '../../store/authSlice.ts'
 
 function Profile() {
     const dispatch = useAppDispatch()
-    const {loading, error, userInfos} = useUserSelector()
+    const {error, userInfos} = useUserSelector()
+    const [editingMode, setEditingMode] = useState<boolean>(false)
+    const [newFirstName, setNewFirstName] = useState<string | undefined>(undefined)
+    const [newLastName, setNewLastName] = useState<string | undefined>(undefined)
 
     useEffect(() => {
         dispatch(fetchUserInfos())
     }, [dispatch])
 
-    const [editingMode, setEditingMode] = useState<boolean>(false)
-    const [newFirstName, setNewFirstName] = useState<string>('')
-    const [newLastName, setNewLastName] = useState<string>('')
+    useEffect(() => {
+        if (!userInfos) {
+            return
+        }
+
+        setNewFirstName(userInfos.firstName)
+        setNewLastName(userInfos.lastName)
+    }, [userInfos])
+
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        dispatch(updateUserInfos({firstName: newFirstName, lastName: newLastName}))
+        dispatch(updateUserInfos({
+            firstName: newFirstName ?? userInfos!.firstName,
+            lastName: newLastName ?? userInfos!.lastName
+        }))
         setEditingMode(false)
     }
 
@@ -25,13 +36,8 @@ function Profile() {
         return <p>{error}</p>
     }
 
-    if (loading) {
-        return <p>{loading}</p>
-    }
-
     if (!userInfos) {
-        dispatch(logout())
-        return
+        return <p>Loading</p>
     }
 
     return (
@@ -42,11 +48,11 @@ function Profile() {
                         <h1>Welcome back</h1>
                         <form onSubmit={(e) => handleSubmit(e)}>
                             <label htmlFor="firstName" className="sr-only">New firstName</label>
-                            <input className="input-new-name" type="text" defaultValue={userInfos.firstName} placeholder="firstName" id="firstName"
-                                   onChange={(e) => setNewFirstName(e.target.value)}/>
-                            <label htmlFor="lastName" className="sr-only">New firstName</label>
-                            <input className="input-new-name" type="text" defaultValue={userInfos.lastName} placeholder="lastName" id="lastName"
-                                   onChange={(e) => setNewLastName(e.target.value)}/>
+                            <input className="input-new-name" type="text" placeholder="firstName" id="firstName"
+                                   onChange={(e) => setNewFirstName(e.target.value)} value={newFirstName}/>
+                            <label htmlFor="lastName" className="sr-only">New lastName</label>
+                            <input className="input-new-name" type="text" placeholder="lastName" id="lastName"
+                                   onChange={(e) => setNewLastName(e.target.value)} value={newLastName}/>
                             <div className="form-username-actions">
                                 <button onClick={() => setEditingMode(!editingMode)}>Cancel</button>
                                 <button type="submit" className="edit-button">Save</button>
