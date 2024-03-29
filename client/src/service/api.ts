@@ -1,19 +1,6 @@
-import {UserInfos, UsernameUpdate} from '../types'
+import {LoginData, UserInfos, UsernameUpdate} from '../types'
 
 const apiV1User = 'http://localhost:3001/api/v1/user/'
-
-export class HttpError extends Error {
-    statusCode: number
-
-    constructor(response: Response) {
-        super('Unknown request error')
-        this.statusCode = response.status
-    }
-}
-
-export type LoginData = {
-    token: string
-}
 
 export async function signIn(email: string, password: string) : Promise<LoginData> {
     const response = await fetch(apiV1User + 'login', {
@@ -25,47 +12,47 @@ export async function signIn(email: string, password: string) : Promise<LoginDat
     })
 
     if (!response.ok) {
-        throw new HttpError(response)
+        const { message } = await response.json()
+        throw new Error(message)
     }
 
     const { body } = await response.json()
-
     return body
 }
 
-export async function getProfile(token: string): Promise<UserInfos> {
+export async function getProfile(): Promise<UserInfos> {
     const response = await fetch(apiV1User + 'profile', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization' : `Bearer ${token}`
+            'Authorization' : `Bearer ${localStorage.getItem('token') ?? sessionStorage.getItem('token')}`
         }
     })
 
     if (!response.ok) {
-        throw new HttpError(response)
+        const { message } = await response.json()
+        throw new Error(message)
     }
 
     const { body } = await response.json()
-
     return body
 }
 
-export async function updateProfile(data: UsernameUpdate, token: string): Promise<UserInfos> {
+export async function updateProfile(data: UsernameUpdate): Promise<UserInfos> {
     const response = await fetch(apiV1User + 'profile', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization' : `Bearer ${token}`
+            'Authorization' : `Bearer ${localStorage.getItem('token') ?? sessionStorage.getItem('token')}`
         },
         body: JSON.stringify(data)
     })
 
     if (!response.ok) {
-        throw new HttpError(response)
+        const { message } = await response.json()
+        throw new Error(message)
     }
 
     const { body } = await response.json()
-
     return body
 }

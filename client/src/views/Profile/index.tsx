@@ -4,7 +4,7 @@ import {fetchUserInfos, updateUserInfos, useUserSelector} from '../../store/user
 
 function Profile() {
     const dispatch = useAppDispatch()
-    const {error, userInfos} = useUserSelector()
+    const {error, loading, userInfos} = useUserSelector()
     const [editingMode, setEditingMode] = useState<boolean>(false)
     const [newFirstName, setNewFirstName] = useState<string | undefined>(undefined)
     const [newLastName, setNewLastName] = useState<string | undefined>(undefined)
@@ -36,7 +36,7 @@ function Profile() {
         return <p>{error}</p>
     }
 
-    if (!userInfos) {
+    if (loading || !userInfos) {
         return <p>Loading</p>
     }
 

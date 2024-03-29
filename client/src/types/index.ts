@@ -12,3 +12,7 @@ export type UsernameUpdate = {
     firstName: string
     lastName: string
 }
+
+export type LoginData = {
+    token: string
+}

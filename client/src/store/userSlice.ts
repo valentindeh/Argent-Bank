@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
-import {getProfile, HttpError, updateProfile} from '../service/api.ts'
+import {getProfile, updateProfile} from '../service/api.ts'
 import {useAppSelector} from './hooks.ts'
 import {UserInfos, UsernameUpdate} from '../types'
 import {RootState} from './index.ts'
@@ -14,46 +14,24 @@ type UserState = {
 export const fetchUserInfos = createAsyncThunk<UserInfos, void, {
     rejectValue: { message: string },
     state: RootState
-}>('fetchUserInfos', async (_, thunkAPI) => {
+}>('fetchUserInfos', async (_, {rejectWithValue}) => {
     try {
-        const {userToken} = thunkAPI.getState().auth
-
-        if (!userToken) {
-            throw new Error('User token is missing')
-        }
-
-        return getProfile(userToken)
+        return await getProfile()
     } catch (e: any) {
-        let {message} = e
-
-        if (e instanceof HttpError && e.statusCode === 400) {
-            message = 'Unauthorized action'
-        }
-
-        return thunkAPI.rejectWithValue({message})
+        const {message} = e
+        return rejectWithValue({message})
     }
 })
 
 export const updateUserInfos = createAsyncThunk<UserInfos, UsernameUpdate, {
     rejectValue: { message: string },
     state: RootState
-}>("updateProfile", async (data, thunkAPI) => {
+}>("updateProfile", async (data, {rejectWithValue}) => {
         try {
-            const {userToken} = thunkAPI.getState().auth
-
-            if (!userToken) {
-                throw new Error('User token is missing')
-            }
-
-            return updateProfile(data, userToken)
+            return await updateProfile(data)
         } catch (e: any) {
-            let {message} = e
-
-            if (e instanceof HttpError && e.statusCode === 400) {
-                message = 'Unauthorized action'
-            }
-
-            return thunkAPI.rejectWithValue({message})
+            const {message} = e
+            return rejectWithValue({message})
         }
     }
 )
@@ -76,9 +54,9 @@ const userSlice = createSlice({
                 state.loading = false
                 state.userInfos = action.payload
             })
-            .addCase(fetchUserInfos.rejected, (state, action) => {
+            .addCase(fetchUserInfos.rejected, (state, {payload}) => {
                 state.loading = false
-                state.error = action.payload?.message
+                state.error = payload?.message
                 state.userInfos = null
             })
             .addCase(updateUserInfos.pending, (state) => {

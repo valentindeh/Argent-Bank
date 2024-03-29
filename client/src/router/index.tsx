@@ -2,8 +2,10 @@ import {Navigate, Outlet, Route, Routes} from 'react-router-dom'
 import {Home, NotFound, Login, Profile} from '../views'
 import {Header, Footer} from '../components'
 import path from './path'
-import {useAuthSelector} from '../store/authSlice.ts'
+import {logout, useAuthSelector} from '../store/authSlice.ts'
 import {FC, PropsWithChildren} from 'react'
+import {useAppDispatch} from '../store/hooks.ts'
+import {jwtDecode, JwtPayload } from 'jwt-decode'
 
 export default function Router() {
     return (
@@ -20,8 +22,11 @@ export default function Router() {
 
 const ProtectedRoute: FC<PropsWithChildren> = ({children}) => {
     const {userToken} = useAuthSelector()
+    const dispatch = useAppDispatch()
 
-    if (!userToken) {
+    if (!userToken || !validateToken(userToken)) {
+        console.log('ici')
+        dispatch(logout())
         return <Navigate to={path.LOGIN}/>
     }
 
@@ -36,6 +41,17 @@ const PublicRoute: FC<PropsWithChildren> = ({children}) => {
     }
 
     return children
+}
+
+const validateToken = (token: string) => {
+    const decoded = jwtDecode<JwtPayload>(token)
+
+    if (!decoded.exp || decoded.exp * 1000 < Date.now()) {
+        console.error('JWT token expired')
+        return false
+    }
+
+    return true
 }
 
 function Layout() {

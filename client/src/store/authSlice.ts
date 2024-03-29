@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
-import {HttpError, LoginData, signIn} from '../service/api.ts'
+import {signIn} from '../service/api.ts'
 import {useAppSelector} from './hooks.ts'
+import {LoginData} from '../types'
 
 type LoginCredentials = {
     username: string
@@ -14,26 +15,23 @@ type AuthApiState = {
     error: string | undefined
 }
 
-export const login = createAsyncThunk<LoginData, LoginCredentials, { rejectValue: { message: string } }>('login', async (data, thunkAPI) => {
+export const login = createAsyncThunk<LoginData, LoginCredentials, {
+    rejectValue: { message: string }
+}>('login', async (data, {rejectWithValue}) => {
     const {username, password, rememberMe} = data
     try {
         const res = await signIn(username, password)
 
         if (rememberMe) {
-            sessionStorage.setItem('token', res.token)
-        } else {
             localStorage.setItem('token', res.token)
+        } else {
+            sessionStorage.setItem('token', res.token)
         }
 
         return res
     } catch (e: any) {
-        let { message } = e
-
-        if (e instanceof HttpError && e.statusCode === 400) {
-            message = 'Invalid credentials'
-        }
-
-        return thunkAPI.rejectWithValue({ message })
+        const {message} = e
+        return rejectWithValue({message})
     }
 })
 
@@ -47,10 +45,10 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        logout: () => {
+        logout: (state) => {
             sessionStorage.clear()
             localStorage.clear()
-            return initialState
+            state.userToken = null
         }
     },
     extraReducers: (builder) => {
